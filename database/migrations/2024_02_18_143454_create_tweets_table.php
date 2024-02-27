@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('tweet');
+            $table->string('image')->nullable(); // 画像のパスを保存するための新しいカラム
             $table->timestamps();
         });
     }

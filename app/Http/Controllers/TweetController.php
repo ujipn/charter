@@ -34,9 +34,19 @@ class TweetController extends Controller
         //
         $request->validate([
             'tweet' => 'required|max:255',
-          ]);
-      
-          $request->user()->tweets()->create($request->only('tweet'));
+            'image' => 'nullable|image', // 画像のバリデーションルールを追加
+        ]);
+    
+        if ($request->hasFile('image')) {
+            
+            $path = $request->file('image')->store('images', 'public'); // 画像を保存
+            $request->user()->tweets()->create([
+                'tweet' => $request->tweet,
+                'image' => $path, // 画像のパスを保存
+            ]);
+        } else {
+            $request->user()->tweets()->create($request->only('tweet'));
+        }
       
           return redirect()->route('tweets.index');
     }
@@ -67,9 +77,17 @@ class TweetController extends Controller
         //
         $request->validate([
             'tweet' => 'required|max:255',
-          ]);
-      
-          $tweet->update($request->only('tweet'));
+            'image' => 'nullable|image', // 画像のバリデーションルールを追加
+        ]);
+    
+        $data = ['tweet' => $request->tweet];
+    
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('public/images'); // 画像を保存
+            $data['image'] = $path; // 画像のパスを保存
+        }
+    
+        $tweet->update($data);
       
           return redirect()->route('tweets.show', $tweet);
     }
